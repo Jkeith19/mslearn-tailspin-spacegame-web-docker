@@ -74,21 +74,18 @@ stages:
       artifact: drop
 
 - stage: 'Deploy'
-  displayName: 'Deploy job'
+  displayName: 'Deploy the container'
   dependsOn: Build
   jobs:
-  - deployment: Deploy
+  - job: 'Deploy'
+    displayName: 'Deploy job'
     pool:
       vmImage: 'ubuntu-20.04'
-    environment: spike
     variables:
     - group: Release
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: AzureWebAppContainer@1
-            inputs:
-            appName: $(WebAppName)
-            azureSubscription: 'Resource Manager - Tailspin - Space Game'
-            imageName: $(RegistryName)/$(webRepository):$(build.buildId)
+    steps:
+    - task: AzureWebAppContainer@1
+      inputs:
+       appName: $(WebAppName)
+       azureSubscription: 'Resource Manager - Tailspin - Space Game'
+       imageName: $(RegistryName)/$(webRepository):$(build.buildId)
